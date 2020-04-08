@@ -1,0 +1,70 @@
+docker常用命令
+docker images			查看镜像
+docker images   -a  		查看所有镜像
+docker images  -qa 		查看所有镜像ID
+docker image prune 		删除虚悬镜像
+docker images <镜像名>        	查看特定的镜像
+docker images -f  <过滤内容> 	-f 过滤参数
+docker image ls --format "{{.ID}}:{{.Repository}}" 	列出镜像ID和仓库名称
+docker rmi <镜像ID/镜像名:标签>		删除镜像（ID前三个字符）
+docker commit [选项] <容器ID或容器名> [<仓库名>[:<标签>]] 将容器的存储层保 存下来成为镜像（慎用）
+docker save java:latest > java.tar 	保存镜像
+docker load < java.tar		加载镜像
+
+docker run 启动器----------------------------------------------------------------------------
+docker run  --name(容器名) -t (伪终端) -i (标准输入保持打开) -d (后台运行) -p(端口映射)
+docker container logs <containerID or	NAMES>		获取容器的输出信息
+docker start/stop/restart <容器名/容器ID>		启动/关闭/重启容器
+docker exec -it  <容器名/容器ID> /bash			进入容器
+
+导出容器---------------------------------------------------------------------------------------
+docker export <容器ID> > name.tar
+导入容器---------------------------------------------------------------------------------------
+cat name.tar | docker import - 
+
+docker rm <容器ID/镜像名>		删除容器
+			
+docker	container	prune		清理所有处于终止状态的容器
+
+
+
+
+构建镜像
+Dockerfile：
+FROM	指定基础镜像，必须是第一条指令。
+ 
+RUN	执行命令，直接在命令行中输入的命令一样
+
+COPY <源路径>...<目标路径>	                    复制文件
+
+ADD	更高级的复制文件,自动解压缩,，仅在需要自动解压缩的场合使用
+
+CMD	容器启动命令
+	
+ENTRYPOINT	入口点	当指定了ENTRYPOINT后，CMD的含义就发生了改变，将CMD的内容作为参数传给ENTRYPOINT指令
+
+ENV <key>=<value>	设置环境变量
+
+VOLUME	<路径>/	["<路径1>","<路径2>"...]	定义匿名卷
+
+EXPOSE	声明运行时容器提供服务端口，运行时并不会因为这个声 明应用就会开启这个端口的服务，以方便配置映射
+
+
+WORKDIR <工作目录路径>	指定工作目录
+
+USER<用户名>	指定当前用用户 USER只是帮助你切换到指定用户而已，这个用户必须是事先建立 好的，否则无法切换。
+
+HEALTHCHECK	健康检查
+--interval=<间隔>：两次健康检查的间隔，默认为30秒
+--timeout=<时长>：健康检查命令运行超时时间，如果超过这个时间，本次健康检查就被 视为失败，默认30秒
+--retries=<次数>：当连续失败指定次数后，则将容器状态视为unhealthy，默认3 次。
+例：HEALTHCHECK	--interval=5s --timeout=3s \		
+       CMD	 curl -fs http://localhost/ || exit 1
+
+ONBUILD<其它指令> 	为他人做嫁衣裳
+它后面跟的是其它指令，比如RUN,COPY等，而这些指令， 在当前镜像构建时并不会被执行。只有当以当前镜像为基础镜像，去构建下一级镜像的时候 才会被执
+
+
+
+
+docker build -t <镜像名> ./
